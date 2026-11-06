@@ -37,7 +37,7 @@ def est(g):
     return p, p - lo, hi - p
 
 
-plt.rcParams.update({'font.size': 7, 'font.family': 'serif', 'axes.edgecolor': '#8a8a85', 'axes.linewidth': .6,
+plt.rcParams.update({'pdf.fonttype': 42, 'font.size': 7, 'font.family': 'serif', 'axes.edgecolor': '#8a8a85', 'axes.linewidth': .6,
                      'xtick.color': '#3d3d3a', 'ytick.color': '#3d3d3a', 'hatch.linewidth': .5, 'hatch.color': 'white'})
 fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.0, 2.1), gridspec_kw=dict(width_ratios=[5, 2], wspace=.18))
 W = .19

@@ -94,6 +94,19 @@ for llm, pr, bien, lab, met in spec:
     lines.append(f'{lab} & ' + ' & '.join(ms(df, mo, llm, pr, bien, met) for df, mo in COLS) + ' \\\\')
 (OUT / 'phobert.tex').write_text('\n'.join(lines) + '\n', encoding='utf-8')
 
+# --- Bảng phụ (bản JCC): recall theo kiểu dấu của tin gốc, TF-IDF 5 seed ---
+E5 = pd.read_csv(R / 'eval_para/eval_para.csv')
+lines = []
+spec = [('goc', '-', 'goc', 'Original'), ('goc', '-', 'bo_dau', 'Original, stripped')]
+spec += [(m, 'ne_loc', 'bo_dau', f'{LLM[m]}, evasive + stripped') for m in LLM]
+for llm, pr, bien, lab in spec:
+    cells = []
+    for m in ['sach', 'tang_cuong_llm']:
+        x = E5[(E5.llm == llm) & (E5.prompt == pr) & (E5.bien == bien) & (E5.model == m)]
+        cells += [f3(x.recall_co_dau.mean()), f3(x.recall_khong_dau.mean())]
+    lines.append(f'{lab} & ' + ' & '.join(cells) + ' \\\\')
+(OUT / 'by_source_style.tex').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+
 # --- Bảng 4: hiệu năng triển khai ---
 bt = (R / 'bench_tfidf.txt').read_text(encoding='utf-8').strip()
 bt = ast.literal_eval(bt.replace('np.float64(', '(')) if bt else {}
