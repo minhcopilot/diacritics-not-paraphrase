@@ -1,0 +1,99 @@
+== Chất lượng bản viết lại (tỷ lệ)
+                           n   rong  tu_choi  lech_dai  mat_url  doi_dau   chep  tieng_anh  goc_roi  jaccard_tv   hong
+model      prompt                                                                                                    
+nemo_12b   ne_loc       710  0.000    0.007     0.155    0.024    0.334  0.014      0.001    0.082       0.338  0.196
+           trung_tinh  2598  0.000    0.005     0.011    0.010    0.503  0.021      0.012    0.022       0.394  0.064
+qwen25_7b  ne_loc       710  0.003    0.010     0.003    0.065    0.232  0.052      0.006    0.082       0.473  0.127
+           trung_tinh  2598  0.002    0.003     0.000    0.006    0.322  0.258      0.011    0.022       0.689  0.279
+seallm3_7b ne_loc       710  0.000    0.151     0.261    0.355    0.327  0.007      0.003    0.082       0.204  0.365
+           trung_tinh  2598  0.001    0.043     0.052    0.124    0.485  0.060      0.008    0.022       0.343  0.153
+
+== Kết quả (trung bình 5 seed)
+                                                  recall     sd    fpr     f1  auroc  rec_co_dau  rec_khong_dau  n_pos
+llm        prompt     bien       model                                                                               
+goc        -          bo_dau     chuan_hoa        0.934  0.037  0.031  0.929  0.992       0.968          0.871   75.4
+                                 sach             0.647  0.055  0.012  0.771  0.981       0.564          0.810   75.4
+                                 tang_cuong       0.898  0.053  0.022  0.918  0.991       0.932          0.838   75.4
+                                 tang_cuong_llm   0.941  0.034  0.035  0.929  0.990       0.973          0.885   75.4
+                      goc        chuan_hoa        0.934  0.037  0.031  0.929  0.992       0.968          0.871   75.4
+                                 sach             0.913  0.026  0.023  0.927  0.989       0.969          0.810   75.4
+                                 tang_cuong       0.924  0.043  0.029  0.925  0.990       0.973          0.838   75.4
+                                 tang_cuong_llm   0.941  0.034  0.035  0.929  0.990       0.973          0.885   75.4
+nemo_12b   ne_loc     bo_dau     chuan_hoa        0.836  0.072    NaN    NaN    NaN       0.867          0.766   63.0
+                                 sach             0.358  0.073    NaN    NaN    NaN       0.286          0.540   63.0
+                                 tang_cuong       0.711  0.165    NaN    NaN    NaN       0.745          0.632   63.0
+                                 tang_cuong_llm   0.938  0.036    NaN    NaN    NaN       0.956          0.902   63.0
+                      nguyen_van chuan_hoa        0.836  0.072    NaN    NaN    NaN       0.867          0.766   63.0
+                                 sach             0.934  0.019    NaN    NaN    NaN       0.961          0.871   63.0
+                                 tang_cuong       0.909  0.051    NaN    NaN    NaN       0.953          0.811   63.0
+                                 tang_cuong_llm   0.938  0.036    NaN    NaN    NaN       0.956          0.902   63.0
+           trung_tinh bo_dau     chuan_hoa        0.913  0.060  0.043  0.898  0.982       0.935          0.865   64.0
+                                 sach             0.455  0.058  0.008  0.614  0.964       0.386          0.622   64.0
+                                 tang_cuong       0.812  0.098  0.033  0.850  0.981       0.811          0.819   64.0
+                                 tang_cuong_llm   0.952  0.028  0.050  0.912  0.986       0.973          0.905   64.0
+                      nguyen_van chuan_hoa        0.913  0.060  0.043  0.898  0.982       0.935          0.865   64.0
+                                 sach             0.919  0.042  0.072  0.867  0.976       0.953          0.847   64.0
+                                 tang_cuong       0.910  0.059  0.067  0.868  0.978       0.952          0.820   64.0
+                                 tang_cuong_llm   0.952  0.028  0.050  0.912  0.986       0.973          0.905   64.0
+qwen25_7b  ne_loc     bo_dau     chuan_hoa        0.898  0.036    NaN    NaN    NaN       0.926          0.836   65.4
+                                 sach             0.479  0.060    NaN    NaN    NaN       0.400          0.663   65.4
+                                 tang_cuong       0.860  0.082    NaN    NaN    NaN       0.892          0.791   65.4
+                                 tang_cuong_llm   0.947  0.034    NaN    NaN    NaN       0.986          0.859   65.4
+                      nguyen_van chuan_hoa        0.898  0.036    NaN    NaN    NaN       0.926          0.836   65.4
+                                 sach             0.919  0.031    NaN    NaN    NaN       0.960          0.825   65.4
+                                 tang_cuong       0.924  0.061    NaN    NaN    NaN       0.960          0.842   65.4
+                                 tang_cuong_llm   0.947  0.034    NaN    NaN    NaN       0.986          0.859   65.4
+           trung_tinh bo_dau     chuan_hoa        0.937  0.034  0.038  0.920  0.993       0.950          0.902   51.4
+                                 sach             0.547  0.062  0.013  0.690  0.977       0.444          0.800   51.4
+                                 tang_cuong       0.884  0.067  0.025  0.906  0.992       0.873          0.908   51.4
+                                 tang_cuong_llm   0.960  0.026  0.044  0.925  0.993       0.978          0.914   51.4
+                      nguyen_van chuan_hoa        0.937  0.034  0.038  0.920  0.993       0.950          0.902   51.4
+                                 sach             0.942  0.019  0.040  0.921  0.990       0.968          0.879   51.4
+                                 tang_cuong       0.945  0.037  0.047  0.914  0.991       0.967          0.890   51.4
+                                 tang_cuong_llm   0.960  0.026  0.044  0.925  0.993       0.978          0.914   51.4
+seallm3_7b ne_loc     bo_dau     chuan_hoa        0.792  0.091    NaN    NaN    NaN       0.809          0.752   50.0
+                                 sach             0.262  0.070    NaN    NaN    NaN       0.199          0.412   50.0
+                                 tang_cuong       0.632  0.070    NaN    NaN    NaN       0.613          0.688   50.0
+                                 tang_cuong_llm   0.906  0.059    NaN    NaN    NaN       0.919          0.879   50.0
+                      nguyen_van chuan_hoa        0.792  0.091    NaN    NaN    NaN       0.809          0.752   50.0
+                                 sach             0.871  0.049    NaN    NaN    NaN       0.902          0.805   50.0
+                                 tang_cuong       0.838  0.092    NaN    NaN    NaN       0.863          0.787   50.0
+                                 tang_cuong_llm   0.906  0.059    NaN    NaN    NaN       0.919          0.879   50.0
+           trung_tinh bo_dau     chuan_hoa        0.746  0.055  0.043  0.793  0.964       0.760          0.712   56.0
+                                 sach             0.372  0.093  0.007  0.529  0.943       0.296          0.576   56.0
+                                 tang_cuong       0.653  0.134  0.032  0.738  0.962       0.659          0.641   56.0
+                                 tang_cuong_llm   0.843  0.083  0.054  0.841  0.974       0.848          0.836   56.0
+                      nguyen_van chuan_hoa        0.746  0.055  0.043  0.793  0.964       0.760          0.712   56.0
+                                 sach             0.848  0.056  0.101  0.788  0.953       0.849          0.841   56.0
+                                 tang_cuong       0.803  0.098  0.096  0.765  0.956       0.819          0.761   56.0
+                                 tang_cuong_llm   0.843  0.083  0.054  0.841  0.974       0.848          0.836   56.0
+
+== Recall gọn: hàng = tập test, cột = mô hình
+model                             chuan_hoa   sach  tang_cuong  tang_cuong_llm
+llm        prompt     bien                                                    
+goc        -          bo_dau          0.934  0.647       0.898           0.941
+                      goc             0.934  0.913       0.924           0.941
+nemo_12b   ne_loc     bo_dau          0.836  0.358       0.711           0.938
+                      nguyen_van      0.836  0.934       0.909           0.938
+           trung_tinh bo_dau          0.913  0.455       0.812           0.952
+                      nguyen_van      0.913  0.919       0.910           0.952
+qwen25_7b  ne_loc     bo_dau          0.898  0.479       0.860           0.947
+                      nguyen_van      0.898  0.919       0.924           0.947
+           trung_tinh bo_dau          0.937  0.547       0.884           0.960
+                      nguyen_van      0.937  0.942       0.945           0.960
+seallm3_7b ne_loc     bo_dau          0.792  0.262       0.632           0.906
+                      nguyen_van      0.792  0.871       0.838           0.906
+           trung_tinh bo_dau          0.746  0.372       0.653           0.843
+                      nguyen_van      0.746  0.848       0.803           0.843
+
+== FPR gọn (chỉ tập có tin âm)
+model                             chuan_hoa   sach  tang_cuong  tang_cuong_llm
+llm        prompt     bien                                                    
+goc        -          bo_dau          0.031  0.012       0.022           0.035
+                      goc             0.031  0.023       0.029           0.035
+nemo_12b   trung_tinh bo_dau          0.043  0.008       0.033           0.050
+                      nguyen_van      0.043  0.072       0.067           0.050
+qwen25_7b  trung_tinh bo_dau          0.038  0.013       0.025           0.044
+                      nguyen_van      0.038  0.040       0.047           0.044
+seallm3_7b trung_tinh bo_dau          0.043  0.007       0.032           0.054
+                      nguyen_van      0.043  0.101       0.096           0.054

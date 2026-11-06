@@ -1,0 +1,1 @@
+{'n_train': 10746, 'n_feat': 133139, 'fit_s': 6.7, 'mb_pickle': 5.5, 'mb_trien_khai': 5.5, 'ms_tb': np.float64(1.57), 'ms_p95': np.float64(2.4), 'cpu': 'Intel64 Family 6 Model 151 Stepping 5, GenuineIntel', 'python': '3.12.9', 'sklearn': '1.9.1'}

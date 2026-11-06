@@ -1,0 +1,18 @@
+\multicolumn{5}{l}{\textit{Recall on scam/spam messages}} \\
+Original & .912 \tiny[.878, .944] & .923 \tiny[.893, .952] & .934 \tiny[.902, .961] & .943 \tiny[.916, .967] \\
+Original, diacritics stripped & .645 \tiny[.587, .700] & .897 \tiny[.863, .931] & .934 \tiny[.901, .962] & .943 \tiny[.915, .966] \\
+Qwen2.5-7B, neutral & .942 \tiny[.907, .972] & .946 \tiny[.915, .972] & .938 \tiny[.904, .969] & .961 \tiny[.931, .985] \\
+Qwen2.5-7B, evasive & .920 \tiny[.887, .949] & .924 \tiny[.889, .952] & .899 \tiny[.864, .931] & .948 \tiny[.921, .973] \\
+Qwen2.5-7B, evasive + stripped & .480 \tiny[.418, .544] & .859 \tiny[.819, .899] & .899 \tiny[.865, .932] & .948 \tiny[.920, .973] \\
+SeaLLMs-v3-7B, neutral & .846 \tiny[.793, .898] & .800 \tiny[.746, .856] & .743 \tiny[.681, .803] & .846 \tiny[.796, .893] \\
+SeaLLMs-v3-7B, evasive & .872 \tiny[.819, .917] & .840 \tiny[.784, .889] & .796 \tiny[.737, .849] & .908 \tiny[.861, .948] \\
+SeaLLMs-v3-7B, evasive + stripped & .260 \tiny[.198, .321] & .632 \tiny[.559, .697] & .796 \tiny[.741, .851] & .908 \tiny[.860, .950] \\
+Mistral-NeMo-12B, neutral & .919 \tiny[.881, .951] & .909 \tiny[.874, .942] & .912 \tiny[.878, .944] & .953 \tiny[.924, .978] \\
+Mistral-NeMo-12B, evasive & .933 \tiny[.901, .963] & .908 \tiny[.868, .944] & .835 \tiny[.790, .880] & .940 \tiny[.904, .968] \\
+Mistral-NeMo-12B, evasive + stripped & .359 \tiny[.300, .421] & .708 \tiny[.652, .766] & .835 \tiny[.788, .878] & .940 \tiny[.905, .968] \\
+\midrule
+\multicolumn{5}{l}{\textit{False-positive rate on legitimate messages}} \\
+Original & .023 \tiny[.011, .035] & .029 \tiny[.017, .044] & .031 \tiny[.018, .046] & .035 \tiny[.021, .049] \\
+Qwen2.5-7B, neutral rewrite & .039 \tiny[.022, .058] & .047 \tiny[.029, .066] & .038 \tiny[.022, .056] & .044 \tiny[.026, .065] \\
+SeaLLMs-v3-7B, neutral rewrite & .101 \tiny[.078, .127] & .097 \tiny[.075, .120] & .043 \tiny[.029, .059] & .054 \tiny[.037, .072] \\
+Mistral-NeMo-12B, neutral rewrite & .072 \tiny[.053, .094] & .067 \tiny[.050, .086] & .043 \tiny[.028, .058] & .049 \tiny[.033, .067] \\

@@ -1,0 +1,74 @@
+       llm     prompt       bien          model  recall      recall_ci   fpr         fpr_ci
+       goc          -     bo_dau      chuan_hoa   0.934 [0.901, 0.962] 0.031 [0.019, 0.046]
+       goc          -     bo_dau           sach   0.645 [0.587, 0.700] 0.012 [0.004, 0.021]
+       goc          -     bo_dau     tang_cuong   0.897 [0.863, 0.931] 0.023 [0.013, 0.035]
+       goc          -     bo_dau tang_cuong_llm   0.943 [0.915, 0.966] 0.035 [0.022, 0.051]
+       goc          -        goc      chuan_hoa   0.934 [0.902, 0.961] 0.031 [0.018, 0.046]
+       goc          -        goc           sach   0.912 [0.878, 0.944] 0.023 [0.011, 0.035]
+       goc          -        goc     tang_cuong   0.923 [0.893, 0.952] 0.029 [0.017, 0.044]
+       goc          -        goc tang_cuong_llm   0.943 [0.916, 0.967] 0.035 [0.021, 0.049]
+  nemo_12b     ne_loc     bo_dau      chuan_hoa   0.835 [0.788, 0.878]   NaN               
+  nemo_12b     ne_loc     bo_dau           sach   0.359 [0.300, 0.421]   NaN               
+  nemo_12b     ne_loc     bo_dau     tang_cuong   0.708 [0.652, 0.766]   NaN               
+  nemo_12b     ne_loc     bo_dau tang_cuong_llm   0.940 [0.905, 0.968]   NaN               
+  nemo_12b     ne_loc nguyen_van      chuan_hoa   0.835 [0.790, 0.880]   NaN               
+  nemo_12b     ne_loc nguyen_van           sach   0.933 [0.901, 0.963]   NaN               
+  nemo_12b     ne_loc nguyen_van     tang_cuong   0.908 [0.868, 0.944]   NaN               
+  nemo_12b     ne_loc nguyen_van tang_cuong_llm   0.940 [0.904, 0.968]   NaN               
+  nemo_12b trung_tinh     bo_dau      chuan_hoa   0.912 [0.875, 0.944] 0.043 [0.028, 0.059]
+  nemo_12b trung_tinh     bo_dau           sach   0.453 [0.391, 0.518] 0.008 [0.001, 0.015]
+  nemo_12b trung_tinh     bo_dau     tang_cuong   0.809 [0.762, 0.855] 0.034 [0.021, 0.048]
+  nemo_12b trung_tinh     bo_dau tang_cuong_llm   0.953 [0.924, 0.978] 0.049 [0.034, 0.067]
+  nemo_12b trung_tinh nguyen_van      chuan_hoa   0.912 [0.878, 0.944] 0.043 [0.028, 0.058]
+  nemo_12b trung_tinh nguyen_van           sach   0.919 [0.881, 0.951] 0.072 [0.053, 0.094]
+  nemo_12b trung_tinh nguyen_van     tang_cuong   0.909 [0.874, 0.942] 0.067 [0.050, 0.086]
+  nemo_12b trung_tinh nguyen_van tang_cuong_llm   0.953 [0.924, 0.978] 0.049 [0.033, 0.067]
+ qwen25_7b     ne_loc     bo_dau      chuan_hoa   0.899 [0.865, 0.932]   NaN               
+ qwen25_7b     ne_loc     bo_dau           sach   0.480 [0.418, 0.544]   NaN               
+ qwen25_7b     ne_loc     bo_dau     tang_cuong   0.859 [0.819, 0.899]   NaN               
+ qwen25_7b     ne_loc     bo_dau tang_cuong_llm   0.948 [0.920, 0.973]   NaN               
+ qwen25_7b     ne_loc nguyen_van      chuan_hoa   0.899 [0.864, 0.931]   NaN               
+ qwen25_7b     ne_loc nguyen_van           sach   0.920 [0.887, 0.949]   NaN               
+ qwen25_7b     ne_loc nguyen_van     tang_cuong   0.924 [0.889, 0.952]   NaN               
+ qwen25_7b     ne_loc nguyen_van tang_cuong_llm   0.948 [0.921, 0.973]   NaN               
+ qwen25_7b trung_tinh     bo_dau      chuan_hoa   0.938 [0.902, 0.968] 0.038 [0.022, 0.057]
+ qwen25_7b trung_tinh     bo_dau           sach   0.545 [0.472, 0.617] 0.013 [0.004, 0.024]
+ qwen25_7b trung_tinh     bo_dau     tang_cuong   0.883 [0.837, 0.925] 0.025 [0.012, 0.038]
+ qwen25_7b trung_tinh     bo_dau tang_cuong_llm   0.961 [0.931, 0.985] 0.044 [0.027, 0.063]
+ qwen25_7b trung_tinh nguyen_van      chuan_hoa   0.938 [0.904, 0.969] 0.038 [0.022, 0.056]
+ qwen25_7b trung_tinh nguyen_van           sach   0.942 [0.907, 0.972] 0.039 [0.022, 0.058]
+ qwen25_7b trung_tinh nguyen_van     tang_cuong   0.946 [0.915, 0.972] 0.047 [0.029, 0.066]
+ qwen25_7b trung_tinh nguyen_van tang_cuong_llm   0.961 [0.931, 0.985] 0.044 [0.026, 0.065]
+seallm3_7b     ne_loc     bo_dau      chuan_hoa   0.796 [0.741, 0.851]   NaN               
+seallm3_7b     ne_loc     bo_dau           sach   0.260 [0.198, 0.321]   NaN               
+seallm3_7b     ne_loc     bo_dau     tang_cuong   0.632 [0.559, 0.697]   NaN               
+seallm3_7b     ne_loc     bo_dau tang_cuong_llm   0.908 [0.860, 0.950]   NaN               
+seallm3_7b     ne_loc nguyen_van      chuan_hoa   0.796 [0.737, 0.849]   NaN               
+seallm3_7b     ne_loc nguyen_van           sach   0.872 [0.819, 0.917]   NaN               
+seallm3_7b     ne_loc nguyen_van     tang_cuong   0.840 [0.784, 0.889]   NaN               
+seallm3_7b     ne_loc nguyen_van tang_cuong_llm   0.908 [0.861, 0.948]   NaN               
+seallm3_7b trung_tinh     bo_dau      chuan_hoa   0.743 [0.682, 0.804] 0.043 [0.028, 0.060]
+seallm3_7b trung_tinh     bo_dau           sach   0.364 [0.296, 0.427] 0.007 [0.001, 0.015]
+seallm3_7b trung_tinh     bo_dau     tang_cuong   0.646 [0.582, 0.709] 0.032 [0.019, 0.046]
+seallm3_7b trung_tinh     bo_dau tang_cuong_llm   0.846 [0.796, 0.892] 0.054 [0.037, 0.072]
+seallm3_7b trung_tinh nguyen_van      chuan_hoa   0.743 [0.681, 0.803] 0.043 [0.029, 0.059]
+seallm3_7b trung_tinh nguyen_van           sach   0.846 [0.793, 0.898] 0.101 [0.078, 0.127]
+seallm3_7b trung_tinh nguyen_van     tang_cuong   0.800 [0.746, 0.856] 0.097 [0.075, 0.120]
+seallm3_7b trung_tinh nguyen_van tang_cuong_llm   0.846 [0.796, 0.893] 0.054 [0.037, 0.072]
+
+== Hiệu recall ghép cặp tang_cuong_llm - sach
+       llm     prompt       bien  n_id  delta_recall              ci  ci_khong_chua_0
+       goc          -     bo_dau   305         0.292  [0.243, 0.344]             True
+       goc          -        goc   305         0.033  [0.008, 0.061]             True
+  nemo_12b     ne_loc     bo_dau   253         0.586  [0.523, 0.641]             True
+  nemo_12b     ne_loc nguyen_van   253         0.004 [-0.024, 0.032]            False
+  nemo_12b trung_tinh     bo_dau   263         0.499  [0.437, 0.557]             True
+  nemo_12b trung_tinh nguyen_van   263         0.036  [0.010, 0.065]             True
+ qwen25_7b     ne_loc     bo_dau   267         0.457  [0.397, 0.515]             True
+ qwen25_7b     ne_loc nguyen_van   267         0.022 [-0.002, 0.047]            False
+ qwen25_7b trung_tinh     bo_dau   212         0.410  [0.344, 0.476]             True
+ qwen25_7b trung_tinh nguyen_van   212         0.014 [-0.014, 0.042]            False
+seallm3_7b     ne_loc     bo_dau   201         0.649  [0.585, 0.714]             True
+seallm3_7b     ne_loc nguyen_van   201         0.037 [-0.002, 0.077]            False
+seallm3_7b trung_tinh     bo_dau   225         0.485  [0.419, 0.549]             True
+seallm3_7b trung_tinh nguyen_van   225        -0.009 [-0.047, 0.029]            False

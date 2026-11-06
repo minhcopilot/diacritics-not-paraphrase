@@ -1,0 +1,173 @@
+% Bản thảo cho ICIIT 2027 (kỷ yếu ACM). Bảng trong tables/ do scripts/make_tables.py sinh ra; không sửa tay.
+\documentclass[sigconf]{acmart}
+\usepackage{booktabs}
+\usepackage{multirow}
+\makeatletter\let\inputtable\@@input\makeatother % \input không dùng được trong tabular ngay trước \bottomrule
+
+\settopmatter{printacmref=false}
+\setcopyright{none}
+\acmConference[ICIIT 2027]{12th International Conference on Intelligent Information Technology}{March 04--07, 2027}{Ho Chi Minh City, Vietnam}
+
+\begin{document}
+
+\title{Diacritics, Not Paraphrase: Stress-Testing Vietnamese Scam SMS Filters Against LLM Rewriting}
+
+\author{Phan L\^e V\u{a}n Minh}
+\affiliation{%
+  \institution{University of Technology -- The University of Da Nang}
+  \city{Da Nang}
+  \country{Vietnam}}
+\email{102250417@hv.dut.udn.vn}
+
+\begin{abstract}
+Large language models (LLMs) let fraudsters rewrite scam text messages at no cost, and prior work on English e-mail reports that such rewriting defeats phishing detectors. We test whether this holds for Vietnamese SMS, a channel where a second, even cheaper evasion is available: dropping diacritics. Starting from 2,598 de-duplicated real Vietnamese messages, we generate about 9,900 rewrites with three open LLMs (Qwen2.5-7B, SeaLLMs-v3-7B and Mistral-NeMo-12B) under a neutral and an explicitly evasive prompt, filter them for refusals, copies and meaning drift (LaBSE), and evaluate TF-IDF and PhoBERT detectors with bootstrap confidence intervals. LLM rewriting alone costs a word/character TF-IDF filter at most about seven recall points, but rewriting followed by diacritic stripping lowers recall from 0.91 to 0.26--0.48. LLM-rewritten legitimate messages are also flagged up to four times more often. PhoBERT is less robust to rewriting than TF-IDF. A lightweight defense, diacritic normalization plus training on rewrites produced by \emph{other} LLMs, keeps recall at 0.85--0.96 under every attack with a 1-point rise in false positives, in a 5.5\,MB model that classifies a message in 1.6\,ms on one CPU thread.
+\end{abstract}
+
+\keywords{SMS scam detection, smishing, Vietnamese, large language models, adversarial robustness, diacritics}
+
+\maketitle
+
+\section{Introduction}
+Online fraud is a growing problem in Vietnam: according to the Ministry of Public Security, it caused losses of more than VND~6 trillion in the first eleven months of 2025~\cite{sggp2026scamlosses}. Scam and spam SMS are a common entry point, typically impersonating banks, carriers, delivery services and government agencies.
+Mobile operators and handset vendors filter these messages with lightweight text classifiers. Generative LLMs change the threat model: an attacker can now rewrite each lure into many fluent variants. For English phishing e-mail, LLM-rephrased messages degrade existing detectors~\cite{afane2024nextgen}, and LLM-based phone-scam detectors lose accuracy on newly generated samples~\cite{shen2024phonescam}. Whether these findings transfer to Vietnamese, and what actually breaks a deployed filter there, has not been measured.
+
+Vietnamese adds an evasion that needs no LLM at all: diacritics can be dropped, and native readers still understand the text. Many legitimate notifications (e.g., OTP messages) are already written without diacritics, so the transformation is natural on this channel. The only public LLM-paraphrase set for Vietnamese lures, released with the PhishVN dataset~\cite{vu2026phishvn}, is itself stored without diacritics. As we show in Section~\ref{sec:pilot}, this setup cannot separate the effect of rewriting from the effect of diacritic loss.
+
+We build a controlled benchmark around real Vietnamese SMS and ask three questions:
+\textbf{RQ1}: How much do LLM rewriting, diacritic stripping and their combination reduce scam recall?
+\textbf{RQ2}: Are legitimate messages rewritten by an LLM falsely flagged more often?
+\textbf{RQ3}: Can a cheap, CPU-friendly defense recover robustness without hurting clean accuracy?
+
+Our contributions are:
+(i) a rewriting benchmark of about 9,900 LLM rewrites of real Vietnamese SMS from three open LLMs and two prompts, with quality control (refusal, copy and meaning-drift filters) and both scam \emph{and} legitimate rewrites, so that false positives can be measured;
+(ii) a systematic evaluation of TF-IDF and PhoBERT~\cite{nguyen2020phobert} detectors with message-level bootstrap confidence intervals. It shows that diacritic stripping, not paraphrase, is the dominant weakness, and that the two attacks compound;
+(iii) a leave-one-LLM-out augmentation defense that generalizes to an unseen rewriting LLM and runs in a 5.5\,MB model on a single CPU thread.
+Our code, prompts, rewrites and per-message predictions are publicly available at \url{https://github.com/minhcopilot/diacritics-not-paraphrase}. The code is released under the MIT licence and the data under CC~BY~4.0, the licence of the source data.
+
+\section{Related Work}
+\textbf{Vietnamese spam SMS.} Pham and Le-Hong~\cite{pham2017vnsms} built a content-based filter on 6,599 Vietnamese messages. Their work predates LLMs and does not consider evasion. PhishVN~\cite{vu2026phishvn} provides time-stamped Vietnamese phishing URLs with impersonation-scenario labels and a 386-variant LLM-paraphrase evaluation set; the text-message channel is left to future work.
+
+\textbf{LLMs and scam detection.} Afane et al.~\cite{afane2024nextgen} rephrase English phishing e-mails with GPT-4 and Llama~3 and report reduced detection. Shen et al. study LLM-based phone-scam detection~\cite{shen2024phonescam} and real-time warnings~\cite{shen2025warned}. Recent benchmarks cover psychological techniques in real scams~\cite{ma2025psyscam}, early prediction of scam progression~\cite{sun2026prescam}, synthetic smishing conversations~\cite{lochstampfor2026smishing}, SMS-to-webpage fraud with agentic LLMs~\cite{zhou2026fraudsmswalker}, and privacy-preserving scam detection~\cite{hossain2025aiintheloop}. All of these are in English or Chinese, and none measures false positives on LLM-written \emph{legitimate} messages.
+
+\textbf{Adversarial text.} Character- and word-level attacks and adversarial training are well studied in general NLP~\cite{morris2020textattack}. We focus on the two attacks that are cheapest for Vietnamese scammers: LLM rewriting and diacritic removal.
+
+\section{Benchmark Construction}
+\textbf{Source messages.} We use the Vietnamese Quality-Assured SMS Scam Dataset~\cite{vnsmsdataset}, 2,991 real Vietnamese SMS labelled as legitimate or spam/scam and released under CC~BY~4.0. According to its authors, the messages were contributed with consent and personal information was replaced by placeholder tokens such as \texttt{[PHONE]} and \texttt{[MONEY]}. After Unicode NFC normalization and case- and space-insensitive de-duplication, 2,598 messages remain: 710 positive and 1,888 negative. URLs are replaced by a \texttt{<URL>} token, so that detectors cannot rely on link artefacts and rewrites cannot alter real links.
+
+\textbf{LLM rewriting.} We use three open instruction-tuned LLMs from different developers and training mixtures: Qwen2.5-7B-Instruct~\cite{qwen2025qwen25}, SeaLLMs-v3-7B-Chat~\cite{zhang2024seallms3}, which is tuned for Southeast Asian languages, and Mistral-NeMo-Instruct-12B~\cite{mistral2024nemo}. They are loaded in 4-bit NF4 and sampled with temperature 0.7 and top-$p$ 0.9 on two T4 GPUs.
+The \emph{neutral} prompt asks the model to rewrite every message, scam or legitimate, with the same meaning and tone. The \emph{evasive} prompt, applied to positive messages only, asks the model to make the message sound like an ordinary message and avoid wording that spam filters recognize, while keeping its purpose and call to action. Both prompts ask the model to keep placeholders, numbers and the original diacritic style. This yields 3,308 generations per model.
+
+\textbf{Quality control.} We discard empty outputs, refusals, outputs whose length ratio to the source falls outside $[0.3, 3]$, near-copies (character 3-gram Jaccard $\ge 0.9$), English outputs, and rewrites of 58 positive sources that are themselves character-obfuscated noise; rewriting such noise produces unrelated text. Meaning preservation is measured with LaBSE~\cite{feng2022labse} cosine similarity. Table~\ref{tab:quality} shows that the models behave very differently. Qwen copies a quarter of neutral inputs. SeaLLMs refuses 15\% of evasive requests and, when it complies, drifts most in meaning. All three models change the diacritic style of 23--50\% of messages despite being told not to.
+In our main analysis we keep every rewrite that passes the filters above. Section~\ref{sec:sens} repeats the analysis after also removing rewrites with LaBSE $<0.7$.
+
+\begin{table*}[t]
+\caption{Rewrite quality per LLM and prompt. Refusal, copy, discarded and style-change values are fractions of all generations. LaBSE statistics are computed on the kept rewrites.}
+\label{tab:quality}
+\small
+\begin{tabular}{llrrrrrrr}
+\toprule
+LLM & Prompt & $n$ & Refusal & Copy & Discarded & Diacritic style changed & LaBSE median & LaBSE $<0.7$ \\
+\midrule
+\inputtable tables/quality.tex
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\textbf{Attack variants.} Each test message is evaluated (a) as written, (b) with diacritics stripped, (c) as an LLM rewrite (neutral or evasive), and (d) as an LLM rewrite followed by diacritic stripping.
+
+\section{Detectors and Defenses}
+\textbf{TF-IDF.} A logistic-regression classifier (balanced class weights) over concatenated word 1--2-gram and character 2--5-gram TF-IDF features. This is the kind of model that can be embedded in an SMS gateway or on a phone.
+\textbf{PhoBERT.} PhoBERT-base-v2~\cite{nguyen2020phobert} fine-tuned for 3 epochs (learning rate $2\times10^{-5}$, batch size 16, at most 160 subword tokens, PyVi word segmentation). The epoch with the best validation AUROC is kept.
+
+We compare four training regimes:
+\emph{Base}, trained on the original messages;
+\emph{+Strip}, which adds a diacritic-stripped copy of every training message;
+\emph{Normalize} (TF-IDF only), which strips diacritics from both training and test inputs;
+and \emph{+LLM (leave-one-out)}, which adds the rewrites of the training messages produced by the two LLMs \emph{other} than the one under test, on top of Normalize for TF-IDF and on top of +Strip for PhoBERT. The leave-one-out design measures generalization to an unseen rewriting model rather than memorization of one model's style.
+
+\section{Experiments}
+\textbf{Protocol.} We use random 80/10/10 splits, five seeds for TF-IDF and three for PhoBERT. Rewrites of a message always stay in the same split as the message. The decision threshold maximizes F1 on the original validation split. This mirrors deployment: the operator tunes the filter on its own traffic and cannot anticipate the attack. Each test split contains about 75 positive and 190 negative messages. We therefore pool predictions over seeds and report 95\% confidence intervals from a bootstrap that resamples source messages (B=2,000). Differences between models are measured with a paired bootstrap.
+
+\subsection{Pilot: Why a New Benchmark Is Needed}\label{sec:pilot}
+We first apply the Base TF-IDF filter to the 246 SMS-channel lures of the PhishVN paraphrase set~\cite{vu2026phishvn}. Recall is 0.669, which looks like strong evidence that LLM paraphrase is effective. However, the same filter achieves 0.644 on our own real test positives once their diacritics are stripped, and the PhishVN lures are stored without diacritics. A Normalize filter reaches 0.946 on the same lures. Almost all of the apparent paraphrase effect is therefore diacritic loss, which motivates our controlled benchmark.
+
+\subsection{RQ1: What Breaks the Filter?}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/recall_fpr.pdf}
+\caption{TF-IDF recall under each attack (left) and false-positive rate (FPR) on legitimate messages (right), pooled over the three rewriting LLMs and five seeds. Error bars are 95\% bootstrap confidence intervals. Hatching distinguishes the training regimes in grayscale print. Table~\ref{tab:main} gives the values per LLM.}
+\label{fig:main}
+\end{figure*}
+
+Figure~\ref{fig:main} summarizes the TF-IDF results, and Table~\ref{tab:main} breaks them down by LLM. Rewriting alone has a small effect. With diacritics kept, the Base filter's recall on rewrites is 0.85--0.94, against 0.91 on the originals. This holds even for the evasive prompt. Diacritic stripping alone lowers recall to 0.65. The combination is far stronger than either attack: evasive rewriting followed by stripping lowers recall to 0.48 (Qwen), 0.36 (NeMo) and 0.26 (SeaLLMs). SeaLLMs, the model tuned for Southeast Asian languages, produces the most damaging rewrites.
+
+\begin{table*}[t]
+\caption{TF-IDF results (5 seeds pooled, 95\% bootstrap CI in brackets). \emph{Neutral} and \emph{evasive} are LLM rewrites with diacritics kept as generated. \emph{+ stripped} removes diacritics after rewriting.}
+\label{tab:main}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Test set & Base & +Strip & Normalize & +LLM (leave-one-out) \\
+\midrule
+\inputtable tables/tfidf_main.tex
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{RQ2: False Alarms on LLM-Written Legitimate Messages}
+Rewriting legitimate messages raises the Base filter's FPR from 0.023 to 0.039 (Qwen), 0.072 (NeMo) and 0.101 (SeaLLMs). The confidence intervals for NeMo and SeaLLMs do not overlap with the original. A filter tuned on human-written traffic thus partly learns ``machine-like style'' as a scam cue. This matters as legitimate senders increasingly draft notifications with LLMs. No prior scam benchmark we are aware of measures this effect.
+
+\subsection{RQ3: A Lightweight Defense}
+Normalization alone removes the stripping attack but lowers recall on SeaLLMs rewrites to 0.74--0.80. Adding rewrites from the two \emph{other} LLMs fixes this. +LLM keeps recall at 0.85--0.96 under every attack, including the unseen rewriting model. On the strongest attacks it improves recall over Base by 0.41--0.65 (paired bootstrap; all CIs exclude 0). On original messages it also improves recall by 0.033 (CI [0.008, 0.061]). Its FPR rises from 0.023 to 0.035 on original legitimate messages but falls on LLM-rewritten ones (0.044--0.054 versus 0.039--0.101 for Base).
+
+\subsection{TF-IDF Versus PhoBERT}
+Table~\ref{tab:phobert} compares the two detector families on the first three seeds. Base PhoBERT has a lower FPR on original messages (0.007) but is \emph{less} robust to rewriting than TF-IDF: its recall on SeaLLMs neutral rewrites is 0.74, against 0.88 for TF-IDF on the same seeds, and its FPR on rewritten legitimate messages rises up to ninefold. Augmentation helps PhoBERT in the same way it helps TF-IDF. PhoBERT +LLM is the most accurate configuration overall: recall 0.94 with an FPR of 0.015 on original messages, recall 0.88--0.97 under every attack, and an FPR of 0.017--0.046 on rewritten legitimate messages.
+
+\begin{table*}[t]
+\caption{TF-IDF versus PhoBERT (seeds 0--2, mean $\pm$ s.d. over seeds). The first eight rows are recall; the last four are FPR.}
+\label{tab:phobert}
+\small
+\begin{tabular}{lccccc}
+\toprule
+ & \multicolumn{2}{c}{TF-IDF} & \multicolumn{3}{c}{PhoBERT} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-6}
+Test set & Base & +LLM & Base & +Strip & +LLM \\
+\midrule
+\inputtable tables/phobert.tex
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Deployment Cost}
+Table~\ref{tab:eff} reports model size and single-message CPU latency (batch size 1, one thread). The proposed TF-IDF filter, trained on all original and rewritten messages, needs 5.5\,MB and 1.6\,ms per message, small enough for on-device or gateway deployment. PhoBERT is about 100 times larger and slower (515\,MB, 170\,ms). It therefore buys its extra accuracy at a cost that matters for high-volume SMS gateways and on-device filtering. A dynamically quantized INT8 PhoBERT produced degenerate predictions in our environment, so we do not report it.
+
+\begin{table}[t]
+\caption{Model size and CPU latency per message (batch size 1, single thread). The TF-IDF model was measured on an Intel desktop CPU and PhoBERT on a Kaggle CPU, so the latencies are indicative only.}
+\label{tab:eff}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Model & Size (MB) & Mean (ms) & p95 (ms) \\
+\midrule
+\inputtable tables/efficiency.tex
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Sensitivity to Meaning Drift}\label{sec:sens}
+A rewrite that changes the meaning of a scam may stop being a scam. We therefore repeat the TF-IDF analysis after also removing rewrites with LaBSE similarity below 0.7. All conclusions hold. Base recall on evasive rewrites with stripping is 0.20--0.44. +LLM recall is 0.92--0.94. The Base FPR on rewritten legitimate messages is 0.040--0.075, against 0.036--0.039 for +LLM.
+
+\section{Discussion and Limitations}
+Our results suggest that, for Vietnamese SMS, the cheapest attack is also the most effective, and that defenders should normalize diacritics before worrying about LLM paraphrase. The two attacks compound, and augmenting with rewrites from a \emph{different} LLM transfers to an unseen one.
+The study has several limitations. The positive class mixes spam and scam. Test splits are small, which we address with confidence intervals but which still limits fine-grained comparisons. We use three open 7--12B LLMs with a single sampling configuration and no attacker who adaptively queries the filter. All messages come from a single public collection, so the findings may not cover other senders, periods or regions.
+LLMs did not follow the instruction to keep the diacritic style. For this reason we report the stripped variants explicitly rather than relying on the generated style.
+
+\textbf{Ethics.} We generate rewrites of \emph{existing} messages only to measure and improve detection. We release prompts and rewrites only for defensive research, and personal data in the source messages is already masked with placeholders.
+
+\section{Conclusion}
+We introduced a controlled benchmark of LLM-rewritten Vietnamese SMS and showed that diacritic stripping, not paraphrase, is the dominant weakness of current filters. The two attacks compound to reduce recall by up to 65 points, and LLM-written legitimate messages are falsely flagged up to four times more often. A 5.5\,MB TF-IDF filter with diacritic normalization and leave-one-LLM-out rewrite augmentation keeps recall at 0.85--0.96 under every attack we tested. Future work includes adaptive attackers, larger and more recent message collections, and separating spam from scam.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{refs}
+
+\end{document}
